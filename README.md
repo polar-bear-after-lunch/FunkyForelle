@@ -18,7 +18,10 @@ Get in touch: **polar.bear.after.lunch [at] gmail [dot] com**
 
 ## Funding status
 
-We have applied for a Fellowship and an Open Data grant and are waiting for both decisions.
+We have applied to two funding programmes and are waiting for both decisions:
+
+- [UniBE Digital Venture Fellowship](https://www.unibe.ch/research/funding_and_prizes/unibe_funding_schemes/digital_venture_fellowship/index_eng.html) — University of Bern
+- [Prototype Fund Switzerland](https://prototypefund.opendata.ch/en/) — Opendata.ch
 
 ## Internship Positions
 
