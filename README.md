@@ -14,7 +14,7 @@ After strong interest at the AI + Environment Summit 2026 at Innovation Park Zur
 - **Scientists** — freshwater ecology, hydrology, water chemistry, sensor calibration
 - **Funding angels** — people and organisations who want to back open environmental technology
 
-Get in touch: **polar.bear.after.lunch@gmail.com**
+Get in touch: **polar.bear.after.lunch [at] gmail [dot] com**
 
 ## Funding status
 
@@ -31,4 +31,4 @@ See the [Internship](./Internship/) folder for full specifications.
 
 ## Contact
 
-polar.bear.after.lunch@gmail.com
+polar.bear.after.lunch [at] gmail [dot] com
