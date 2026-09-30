@@ -8,7 +8,7 @@ An open-source early warning system predicting dissolved oxygen in Swiss rivers 
 
 ## We are looking for collaborators
 
-After strong interest at the AI + Environment Summit 2026 at Innovation Park Zurich, we are growing the FunkyForelle community. We would love to hear from:
+A big thank you to all the new friends we met at the [AI + Environment Summit 2026](https://ai-environment-summit.com/) at Innovation Park Zurich! We are growing the FunkyForelle community and would love to hear from:
 
 - **AI experts** — time-series forecasting, hydrological ML, MLOps
 - **Scientists** — freshwater ecology, hydrology, water chemistry, sensor calibration
