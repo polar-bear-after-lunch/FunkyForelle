@@ -1,10 +1,28 @@
+<p align="center">
+  <img src="assets/funkyforelle-fish.svg" alt="FunkyForelle fish" width="100%">
+</p>
+
 # FunkyForelle
 
 An open-source early warning system predicting dissolved oxygen in Swiss rivers and lakes — protecting fish before heatwaves strike.
 
+## We are looking for collaborators
+
+After strong interest at the AI + Environment Summit 2026 at Innovation Park Zurich, we are growing the FunkyForelle community. We would love to hear from:
+
+- **AI experts** — time-series forecasting, hydrological ML, MLOps
+- **Scientists** — freshwater ecology, hydrology, water chemistry, sensor calibration
+- **Funding angels** — people and organisations who want to back open environmental technology
+
+Get in touch: **polar.bear.after.lunch@gmail.com**
+
+## Funding status
+
+We have applied for a Fellowship and an Open Data grant and are waiting for both decisions.
+
 ## Internship Positions
 
-We are looking for two student contributors for November 2026 – February 2027:
+If the funding is successful, we will offer **two paid internships** (November 2026 – February 2027):
 
 - **Machine Learning Engineer** — build the universal DO prediction model
 - **IoT & Sensor Systems Engineer** — design and deploy the field sensor station
@@ -13,5 +31,4 @@ See the [Internship](./Internship/) folder for full specifications.
 
 ## Contact
 
-polar.bear.before.lunch@gmail.com
-
+polar.bear.after.lunch@gmail.com

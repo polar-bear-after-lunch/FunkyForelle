@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 380" width="1200" height="380" role="img" aria-label="FunkyForelle fish">
+  <defs>
+    <pattern id="scales" width="60" height="30" patternUnits="userSpaceOnUse">
+      <path d="M0 30 A30 30 0 0 1 60 30 M-30 15 A30 30 0 0 1 30 15 M30 15 A30 30 0 0 1 90 15" fill="none" stroke="#A7CDE4" stroke-width="2"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="380" rx="24" fill="#C7E4F5"/>
+  <rect width="1200" height="380" rx="24" fill="url(#scales)" opacity="0.7"/>
+  <!-- tail -->
+  <path d="M905 190 C930 170 960 145 1010 100 C1000 140 990 170 985 190 C990 210 1000 240 1010 280 C960 235 930 210 905 190 Z" fill="#fff" stroke="#0D4F7C" stroke-width="6" stroke-linejoin="round"/>
+  <!-- dorsal fin -->
+  <path d="M520 92 C560 45 640 40 700 80 C650 88 600 95 560 110 Z" fill="#fff" stroke="#0D4F7C" stroke-width="6" stroke-linejoin="round"/>
+  <!-- body -->
+  <path d="M190 190 C230 110 380 70 560 80 C720 90 840 140 915 185 C920 188 920 192 915 195 C840 240 720 290 560 300 C380 310 230 270 190 190 Z" fill="#fff" stroke="#0D4F7C" stroke-width="6"/>
+  <!-- pectoral fin -->
+  <path d="M430 235 C455 265 500 285 540 285 C515 262 480 245 440 228 Z" fill="#fff" stroke="#0D4F7C" stroke-width="5" stroke-linejoin="round"/>
+  <!-- gill -->
+  <path d="M330 130 C355 165 355 215 330 250" fill="none" stroke="#0D4F7C" stroke-width="5" stroke-linecap="round"/>
+  <!-- eye -->
+  <circle cx="260" cy="170" r="13" fill="#0D4F7C"/>
+  <circle cx="264" cy="166" r="4" fill="#fff"/>
+  <!-- trout spots -->
+  <g fill="#437A22">
+    <circle cx="470" cy="140" r="7"/><circle cx="540" cy="125" r="6"/><circle cx="610" cy="140" r="7"/>
+    <circle cx="690" cy="150" r="6"/><circle cx="760" cy="165" r="5"/><circle cx="580" cy="175" r="5"/>
+  </g>
+  <g fill="#E88530"><circle cx="505" cy="165" r="5"/><circle cx="650" cy="175" r="5"/></g>
+  <!-- bubbles -->
+  <g fill="none" stroke="#0D4F7C" stroke-width="3">
+    <circle cx="150" cy="140" r="10"/><circle cx="120" cy="100" r="7"/><circle cx="135" cy="65" r="5"/>
+  </g>
+  <!-- waves -->
+  <path d="M60 345 Q90 330 120 345 T180 345 T240 345 T300 345 T360 345 T420 345 T480 345 T540 345 T600 345 T660 345 T720 345 T780 345 T840 345 T900 345 T960 345 T1020 345 T1080 345 T1140 345" fill="none" stroke="#0D4F7C" stroke-width="3"/>
+  <path d="M60 360 Q90 345 120 360 T180 360 T240 360 T300 360 T360 360 T420 360 T480 360 T540 360 T600 360 T660 360 T720 360 T780 360 T840 360 T900 360 T960 360 T1020 360 T1080 360 T1140 360" fill="none" stroke="#0D4F7C" stroke-width="3"/>
+</svg>
