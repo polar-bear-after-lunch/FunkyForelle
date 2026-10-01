@@ -14,6 +14,7 @@ A big thank you to all the new friends we met at the [AI + Environment Summit 20
 - **Scientists** — freshwater ecology, hydrology, water chemistry, sensor calibration
 - **Funding angels** — people and organisations who want to back open environmental technology
 - **Data providers** — agencies sharing river monitoring data
+- **Anyone curious** — everyone interested in protecting fish and rivers
 
 Get in touch: **polar.bear.after.lunch [at] gmail [dot] com**
 
