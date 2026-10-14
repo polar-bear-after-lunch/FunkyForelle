@@ -1,0 +1,126 @@
+{
+  "model": "seq2seq_lstm",
+  "params": {
+    "horizon": 14,
+    "hidden": 64,
+    "n_layers": 2,
+    "dropout": 0.2,
+    "lr": 0.001,
+    "epochs": 100,
+    "patience": 12,
+    "batch_size": 64,
+    "teacher_forcing_start": 0.5,
+    "seed": 1,
+    "best_epoch": 18
+  },
+  "targets": [
+    "do_mgl",
+    "water_temp"
+  ],
+  "features": [
+    "do_mgl",
+    "water_temp",
+    "ph",
+    "conductivity",
+    "do_sat_mgl",
+    "air_temp",
+    "air_temp_max",
+    "precip",
+    "global_radiation",
+    "doy_sin",
+    "doy_cos"
+  ],
+  "stations": {
+    "camels_ch_chem": [
+      "2473"
+    ],
+    "meteoswiss": [
+      "VAD"
+    ]
+  },
+  "period": {
+    "start": "1995-01-01",
+    "end": "2020-12-31",
+    "train_end": "2014-12-31",
+    "val_end": "2016-12-31",
+    "lookback": 21,
+    "horizon": 14,
+    "n_windows": {
+      "train": 6668,
+      "val": 718,
+      "test": 1304
+    }
+  },
+  "data_hash": "e12b53421788",
+  "metrics": {
+    "do_mgl": {
+      "RMSE": 0.28345034528148066,
+      "MAE": 0.22511246771691246,
+      "NSE": 0.9100098635151171,
+      "KGE": 0.8973967552765252,
+      "RMSE_day1": 0.14819293293438482,
+      "RMSE_day14": 0.3294735194453587,
+      "threshold": {
+        "events": 0,
+        "hit_rate": NaN,
+        "false_alarm_ratio": NaN
+      }
+    },
+    "water_temp": {
+      "RMSE": 1.1596479479698711,
+      "MAE": 0.9261702323474453,
+      "NSE": 0.9068119298504123,
+      "KGE": 0.8570290217690155,
+      "RMSE_day1": 0.5634288646657849,
+      "RMSE_day14": 1.365456749012448
+    }
+  },
+  "baselines": {
+    "persistence": {
+      "do_mgl": {
+        "RMSE": 0.34320895635478027,
+        "MAE": 0.2695207058286374,
+        "NSE": 0.8662753905407349,
+        "KGE": 0.9333101980169874,
+        "RMSE_day1": 0.1596956471997305,
+        "RMSE_day14": 0.42627835580830026
+      },
+      "water_temp": {
+        "RMSE": 1.3680015676332322,
+        "MAE": 1.0738913155210634,
+        "NSE": 0.8683251846133402,
+        "KGE": 0.9342728528979608,
+        "RMSE_day1": 0.5708654312822574,
+        "RMSE_day14": 1.7140735948725827
+      }
+    },
+    "climatology": {
+      "do_mgl": {
+        "RMSE": 0.3351494074303893,
+        "MAE": 0.2689156728183669,
+        "NSE": 0.8780232919368636,
+        "KGE": 0.8564131213524353,
+        "RMSE_day1": 0.33469158460218895,
+        "RMSE_day14": 0.3364939514772903
+      },
+      "water_temp": {
+        "RMSE": 1.3713365272748657,
+        "MAE": 1.0922992798147966,
+        "NSE": 0.8742660709570522,
+        "KGE": 0.83371966988652,
+        "RMSE_day1": 1.3660633970990335,
+        "RMSE_day14": 1.3713662559245277
+      }
+    }
+  },
+  "notes": "Exp 1b: + Vaduz weather, seed 1",
+  "ai_assistant": "Perplexity Computer \u00b7 Claude Opus 5.5",
+  "run_id": "20261014-091307",
+  "created": "2026-10-14T09:13:07.606370+00:00",
+  "user": "user",
+  "python": "3.14.3",
+  "git": {
+    "commit": "a106813601002709ec93892aa465a270f1556c2c",
+    "dirty": false
+  }
+}
