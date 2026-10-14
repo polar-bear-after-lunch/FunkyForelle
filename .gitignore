@@ -1,0 +1,22 @@
+# Data (download separately — see docs/data-sources.md)
+data/
+*.zip
+
+# Model artefacts (run.json and runs/index.csv ARE committed)
+runs/**/*.pt
+runs/**/*.npy
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+.env
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db

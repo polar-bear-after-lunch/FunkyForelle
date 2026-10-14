@@ -1,0 +1,44 @@
+# Experiment #1 — reproduce the AareML single-site setup and add weather inputs.
+#
+# Gauge 2473 is Rhein – Diepoldsau (CAMELS-CH-Chem). Note: older AareML material
+# labels it "Aare at Bern"; that label is wrong.
+# Weather: MeteoSwiss Vaduz (VAD), upstream in the same Rhine valley (~30 km).
+# Altenrhein (ARH) is closer but only has precipitation and radiation from 2014.
+
+name = "rhein-diepoldsau-2473-weather"
+start = "1995-01-01"
+end = "2020-12-31"
+train_end = "2014-12-31"   # same split as AareML
+val_end = "2016-12-31"
+lookback = 21
+horizon = 14
+max_gap = 7
+elevation_m = 410          # approx. gauge elevation, for DO saturation pressure correction
+do_threshold_mgl = 6.0     # fish-stress threshold used for hit rate / false alarms
+
+targets = ["do_mgl", "water_temp"]
+features = [
+  "do_mgl", "water_temp", "ph", "conductivity",
+  "do_sat_mgl",
+  "air_temp", "air_temp_max", "precip", "global_radiation",
+  "doy_sin", "doy_cos",
+]
+
+[sources.camels_ch_chem]
+stations = ["2473"]
+root = "data/camels-ch-chem"
+
+[sources.meteoswiss]
+stations = ["VAD"]
+granularity = "d"
+
+[model]
+type = "seq2seq_lstm"
+hidden = 64
+n_layers = 2
+dropout = 0.2
+lr = 0.001
+epochs = 100
+patience = 12
+batch_size = 64
+seed = 42

@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "funkyforelle"
+version = "0.1.0"
+description = "Open dissolved-oxygen early warning for Swiss rivers: data connectors, baselines and seq2seq models."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "FunkyForelle team" }]
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2.1",
+    "requests>=2.31",
+]
+
+[project.optional-dependencies]
+ml = ["torch>=2.2"]
+dev = ["pytest>=8", "ruff>=0.5"]
+
+[project.scripts]
+funkyforelle = "funkyforelle.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["live: hits real external APIs (deselect with -m 'not live')"]
+addopts = "-m 'not live'"
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
