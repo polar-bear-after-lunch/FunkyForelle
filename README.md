@@ -6,6 +6,21 @@
 
 An open-source early warning system predicting dissolved oxygen in Swiss rivers and lakes — protecting fish before heatwaves strike.
 
+## Code
+
+The `funkyforelle` Python package connects public Swiss river and weather data to DO forecasting models:
+
+- **Data connectors**: CAMELS-CH-Chem (historical river chemistry), FOEN hydrology (real-time) and MeteoSwiss weather (open data). They all share one tidy schema.
+- **Models**: persistence and climatology baselines, plus a seq2seq LSTM carried over from [AareML](https://github.com/polar-bear-after-lunch/AareML).
+- **Experiment log**: every run records its data, configuration, git commit, metrics and the AI assistant used.
+
+```bash
+pip install -e ".[ml,dev]"
+funkyforelle train configs/rhein_diepoldsau_2473.toml --ai-assistant "none"
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md), [docs/data-sources.md](docs/data-sources.md) and [docs/experiments.md](docs/experiments.md).
+
 ## We are looking for collaborators
 
 A big thank you to all the new friends we met at the [AI + Environment Summit 2026](https://ai-environment-summit.com/) at Innovation Park Zurich! We are growing the FunkyForelle community and would love to hear from:
