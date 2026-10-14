@@ -31,7 +31,9 @@ def git_info(cwd: str | Path = ".") -> dict[str, str | bool]:
         return subprocess.run(["git", *a], cwd=cwd, capture_output=True, text=True).stdout.strip()
 
     try:
-        return {"commit": run("rev-parse", "HEAD"), "dirty": bool(run("status", "--porcelain"))}
+        # run outputs themselves (runs/) don't make the code dirty
+        dirty = run("status", "--porcelain", "--", ".", ":(exclude)runs")
+        return {"commit": run("rev-parse", "HEAD"), "dirty": bool(dirty)}
     except FileNotFoundError:  # git not installed
         return {"commit": "", "dirty": False}
 
