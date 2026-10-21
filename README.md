@@ -52,3 +52,7 @@ See the [Internship](./Internship/) folder for full specifications.
 ## Contact
 
 polar.bear.after.lunch [at] gmail [dot] com
+
+## Licence
+
+Code is released under the [MIT Licence](LICENSE). Data from FOEN, MeteoSwiss and CAMELS-CH-Chem stay under their providers' terms; see [docs/data-sources.md](docs/data-sources.md).

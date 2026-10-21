@@ -7,6 +7,8 @@ name = "funkyforelle"
 version = "0.1.0"
 description = "Open dissolved-oxygen early warning for Swiss rivers: data connectors, baselines and seq2seq models."
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.11"
 authors = [{ name = "FunkyForelle team" }]
 dependencies = [
