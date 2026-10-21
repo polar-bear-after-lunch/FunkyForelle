@@ -51,3 +51,21 @@ def test_pipeline_seq2seq(synthetic_root, tmp_path):
     assert rec.model == "seq2seq_lstm"
     assert np.isfinite(rec.metrics["water_temp"]["RMSE"])
     assert (tmp_path / "runs" / rec.run_id / "model.pt").exists()
+
+
+def test_pipeline_future_features_and_step_weights(synthetic_root, tmp_path):
+    pytest.importorskip("torch")
+    cfg = _cfg(synthetic_root)
+    cfg["future_features"] = ["doy_sin", "doy_cos"]
+    cfg["model"]["step_weights"] = [0.5, 0.3, 0.2]
+    rec = run(cfg, runs_dir=str(tmp_path / "runs"), verbose=False)
+    assert rec.params["future_features"] == ["doy_sin", "doy_cos"]
+    assert rec.params["step_weights"] == [0.5, 0.3, 0.2]
+    assert np.isfinite(rec.metrics["do_mgl"]["RMSE_day1"])
+
+
+def test_step_weights_length_checked():
+    pytest.importorskip("torch")
+    from funkyforelle.models.seq2seq import Seq2SeqForecaster
+    with pytest.raises(ValueError):
+        Seq2SeqForecaster(horizon=3, step_weights=[1, 1])

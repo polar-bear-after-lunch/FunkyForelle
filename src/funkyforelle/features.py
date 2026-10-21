@@ -75,28 +75,44 @@ def make_windows(
     targets: list[str],
     lookback: int,
     horizon: int,
+    future_features: list[str] | None = None,
 ):
     """Sliding windows; windows with any NaN in inputs or targets are dropped.
 
     Returns ``X [N, lookback, F]``, ``y [N, horizon, T]`` (float32) and the
     forecast-origin dates (last day of each input window).
+
+    If ``future_features`` is given, also returns ``Xf [N, horizon, Ff]``: the
+    values of those columns on the forecast days (t+1 .. t+horizon). Use this for
+    inputs that are *known or forecast* in advance, e.g. weather forecasts and
+    calendar features. With observed weather this is a perfect-forecast upper
+    bound, not an operational setup.
     """
     xa = df[features].to_numpy(dtype=np.float32)
     ya = df[targets].to_numpy(dtype=np.float32)
+    fa = df[future_features].to_numpy(dtype=np.float32) if future_features else None
     n = len(df) - lookback - horizon + 1
-    X, y, origins = [], [], []
+    X, y, Xf, origins = [], [], [], []
     for i in range(max(n, 0)):
         xw = xa[i : i + lookback]
         yw = ya[i + lookback : i + lookback + horizon]
         if np.isnan(xw).any() or np.isnan(yw).any():
             continue
+        if fa is not None:
+            fw = fa[i + lookback : i + lookback + horizon]
+            if np.isnan(fw).any():
+                continue
+            Xf.append(fw)
         X.append(xw)
         y.append(yw)
         origins.append(df.index[i + lookback - 1])
+    nf = len(future_features) if future_features else 0
     if not X:
-        return (
+        out = (
             np.empty((0, lookback, len(features)), np.float32),
             np.empty((0, horizon, len(targets)), np.float32),
             pd.DatetimeIndex([]),
         )
-    return np.stack(X), np.stack(y), pd.DatetimeIndex(origins)
+        return out + (np.empty((0, horizon, nf), np.float32),) if fa is not None else out
+    out = (np.stack(X), np.stack(y), pd.DatetimeIndex(origins))
+    return out + (np.stack(Xf),) if fa is not None else out

@@ -71,6 +71,10 @@ def run(cfg: dict, model_override: str | None = None, ai_assistant: str = "",
     if missing:
         raise KeyError(f"columns not in feature table: {missing}. Available: {list(table.columns)}")
 
+    fut = cfg.get("future_features") or None
+    missing = [c for c in (fut or []) if c not in table]
+    if missing:
+        raise KeyError(f"future features not in feature table: {missing}")
     L, H = cfg["lookback"], cfg["horizon"]
     tr_end, va_end = pd.Timestamp(cfg["train_end"]), pd.Timestamp(cfg["val_end"])
     parts = {
@@ -78,13 +82,15 @@ def run(cfg: dict, model_override: str | None = None, ai_assistant: str = "",
         "val": table.loc[tr_end + pd.Timedelta(days=1) - pd.Timedelta(days=L): va_end],
         "test": table.loc[va_end + pd.Timedelta(days=1) - pd.Timedelta(days=L):],
     }
-    W = {k: F.make_windows(v, feats, targets, L, H) for k, v in parts.items()}
-    for k, (X, _, _) in W.items():
+    W = {k: F.make_windows(v, feats, targets, L, H, fut) for k, v in parts.items()}
+    if not fut:  # uniform shape: (X, y, origins, Xf)
+        W = {k: (*v, None) for k, v in W.items()}
+    for k, (X, *_rest) in W.items():
         if verbose:
             print(f"[pipeline] {k}: {len(X)} windows")
         if len(X) == 0:
             raise ValueError(f"no complete windows in {k} split — check dates / gaps")
-    (Xtr, ytr, _), (Xva, yva, _), (Xte, yte, ote) = W["train"], W["val"], W["test"]
+    (Xtr, ytr, _, Ftr), (Xva, yva, _, Fva), (Xte, yte, ote, Fte) = W["train"], W["val"], W["test"]
 
     tidx = [feats.index(t) for t in targets]
     baselines = {
@@ -101,8 +107,10 @@ def run(cfg: dict, model_override: str | None = None, ai_assistant: str = "",
         pred, params = Climatology().fit(parts["train"], targets).predict(ote, H), {}
     elif model_name == "seq2seq_lstm":
         from .models.seq2seq import Seq2SeqForecaster
-        m = Seq2SeqForecaster(horizon=H, verbose=verbose, **mparams).fit(Xtr, ytr, Xva, yva)
-        pred, params = m.predict(Xte), {**m.params, "best_epoch": m.best_epoch}
+        m = Seq2SeqForecaster(horizon=H, verbose=verbose, **mparams).fit(
+            Xtr, ytr, Xva, yva, Ftr, Fva)
+        pred = m.predict(Xte, Fte)
+        params = {**m.params, "best_epoch": m.best_epoch, "future_features": fut or []}
     else:
         raise ValueError(f"unknown model {model_name!r}")
 
@@ -131,5 +139,8 @@ def run(cfg: dict, model_override: str | None = None, ai_assistant: str = "",
     rec.save(runs_dir)
     if model_name == "seq2seq_lstm":
         m.save(Path(runs_dir) / rec.run_id / "model.pt")
-    np.save(Path(runs_dir) / rec.run_id / "test_pred.npy", pred)
+    out = Path(runs_dir) / rec.run_id
+    np.save(out / "test_pred.npy", pred)
+    np.save(out / "test_true.npy", yte)
+    pd.Series(ote.strftime("%Y-%m-%d")).to_csv(out / "test_origins.csv", index=False, header=False)
     return rec

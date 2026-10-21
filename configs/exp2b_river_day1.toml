@@ -1,0 +1,32 @@
+# Experiment 2b — 1–3 day DO / temperature forecast, Rhein–Diepoldsau (gauge 2473).
+# River inputs only, loss weighted towards day 1 (0.5/0.3/0.2).
+# Same split and test windows as experiment 1; horizon 3 days = the 24–72 h decision window.
+
+name = "exp2b_river_day1"
+start = "1995-01-01"
+end = "2020-12-31"
+train_end = "2014-12-31"
+val_end = "2016-12-31"
+lookback = 21
+horizon = 3
+max_gap = 7
+elevation_m = 410
+do_threshold_mgl = 6.0
+targets = ["do_mgl", "water_temp"]
+features = ["do_mgl", "water_temp", "ph", "conductivity", "do_sat_mgl", "doy_sin", "doy_cos"]
+
+[sources.camels_ch_chem]
+stations = ["2473"]
+root = "data/camels-ch-chem"
+
+[model]
+type = "seq2seq_lstm"
+hidden = 64
+n_layers = 2
+dropout = 0.2
+lr = 0.001
+epochs = 100
+patience = 12
+batch_size = 64
+seed = 42
+step_weights = [0.5, 0.3, 0.2]

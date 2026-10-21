@@ -31,6 +31,18 @@ def test_make_windows_drops_nan_windows():
     assert o[0] == idx[4]
 
 
+def test_make_windows_future_features_are_forecast_days():
+    idx = pd.date_range("2020-01-01", periods=20)
+    df = pd.DataFrame({"a": np.arange(20.0), "w": 100 + np.arange(20.0)}, idx)
+    X, y, o, Xf = F.make_windows(df, ["a"], ["a"], lookback=4, horizon=3, future_features=["w"])
+    assert Xf.shape == (len(X), 3, 1)
+    # future covariates are the values on the same days as the targets
+    assert (Xf[:, :, 0] - 100 == y[:, :, 0]).all()
+    df.iloc[6, 1] = np.nan  # a gap in the future covariate drops affected windows
+    X2, *_ = F.make_windows(df, ["a"], ["a"], 4, 3, ["w"])
+    assert len(X2) == len(X) - 3
+
+
 def test_fill_short_gaps_respects_limit():
     s = pd.Series([1.0, np.nan, np.nan, 4.0] + [np.nan] * 10 + [5.0],
                   index=pd.date_range("2020-01-01", periods=15))
