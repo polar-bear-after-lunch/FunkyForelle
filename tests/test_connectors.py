@@ -105,3 +105,19 @@ def test_meteoswiss_live():
 def test_foen_live():
     df = FoenHydro().latest(["2473"])
     assert not df.empty
+    assert set(df["variable"]) <= {"water_temp", "discharge"}
+    assert (df["station"] == "2473").all()
+
+
+@pytest.mark.live
+def test_foen_live_daterange():
+    import datetime as dt
+
+    end = dt.date.today()
+    df = FoenHydro().fetch(["2473"], end - dt.timedelta(days=2), end)
+    assert not df.empty
+    wide = schema.to_daily_wide(df)
+    assert {"water_temp", "discharge"} <= set(wide.columns)
+    # plausibility: Rhine water temperature and discharge
+    assert wide["water_temp"].dropna().between(0, 30).all()
+    assert (wide["discharge"].dropna() > 0).all()

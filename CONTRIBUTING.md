@@ -85,8 +85,10 @@ metrics, baselines) and appends a line to `runs/index.csv`.
   `--ai-assistant`. This keeps the work transparent for funders and reviewers.
 - Copy the printed summary into the team's Experiments table and add a line
   to the Work Log.
-- Commit `run.json` and `index.csv`. Model weights (`*.pt`) and predictions
-  (`*.npy`) are git-ignored.
+- Commit `run.json`, `index.csv` and the small `test_*.npy` / `test_origins.csv`
+  files. Model weights (`*.pt`) are git-ignored.
+- To compare two setups, use the paired block-bootstrap test:
+  `python scripts/compare_runs.py "<notes A>" "<notes B>" --target do_mgl`.
 - Add notable results to `docs/experiments.md`, with negative results as well.
 
 ## Scientific conventions

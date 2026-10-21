@@ -2,9 +2,9 @@
 data/
 *.zip
 
-# Model artefacts (run.json and runs/index.csv ARE committed)
+# Model weights. run.json, index.csv and the small test_*.npy / test_origins.csv
+# files ARE committed so anyone can re-check comparisons (scripts/compare_runs.py).
 runs/**/*.pt
-runs/**/*.npy
 
 # Python
 __pycache__/

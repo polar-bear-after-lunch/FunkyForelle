@@ -1,0 +1,121 @@
+{
+  "model": "seq2seq_lstm",
+  "params": {
+    "horizon": 3,
+    "hidden": 64,
+    "n_layers": 2,
+    "dropout": 0.2,
+    "lr": 0.001,
+    "epochs": 100,
+    "patience": 12,
+    "batch_size": 64,
+    "teacher_forcing_start": 0.5,
+    "seed": 1,
+    "step_weights": null,
+    "best_epoch": 18,
+    "future_features": []
+  },
+  "targets": [
+    "do_mgl",
+    "water_temp"
+  ],
+  "features": [
+    "do_mgl",
+    "water_temp",
+    "ph",
+    "conductivity",
+    "do_sat_mgl",
+    "doy_sin",
+    "doy_cos"
+  ],
+  "stations": {
+    "camels_ch_chem": [
+      "2473"
+    ]
+  },
+  "period": {
+    "start": "1995-01-01",
+    "end": "2020-12-31",
+    "train_end": "2014-12-31",
+    "val_end": "2016-12-31",
+    "lookback": 21,
+    "horizon": 3,
+    "n_windows": {
+      "train": 6767,
+      "val": 729,
+      "test": 1336
+    }
+  },
+  "data_hash": "5f99f0591ef5",
+  "metrics": {
+    "do_mgl": {
+      "RMSE": 0.20226825011209448,
+      "MAE": 0.1583109518249116,
+      "NSE": 0.9540728631935657,
+      "KGE": 0.9608919412543769,
+      "RMSE_day1": 0.14482320649019895,
+      "RMSE_day3": 0.24802386919858904,
+      "threshold": {
+        "events": 0,
+        "hit_rate": NaN,
+        "false_alarm_ratio": NaN
+      }
+    },
+    "water_temp": {
+      "RMSE": 0.8082820604903475,
+      "MAE": 0.6419930374194048,
+      "NSE": 0.9541081274819301,
+      "KGE": 0.9396860375635733,
+      "RMSE_day1": 0.5573781156529273,
+      "RMSE_day3": 1.0087799696196267
+    }
+  },
+  "baselines": {
+    "persistence": {
+      "do_mgl": {
+        "RMSE": 0.22962128721136454,
+        "MAE": 0.17828133862889456,
+        "NSE": 0.940398913499678,
+        "KGE": 0.9702136834529953,
+        "RMSE_day1": 0.15949965690678838,
+        "RMSE_day3": 0.2859350064449967
+      },
+      "water_temp": {
+        "RMSE": 0.8676226236629349,
+        "MAE": 0.675666161402019,
+        "NSE": 0.9464932606480171,
+        "KGE": 0.9732369636480918,
+        "RMSE_day1": 0.5726734305203286,
+        "RMSE_day3": 1.1141125424316685
+      }
+    },
+    "climatology": {
+      "do_mgl": {
+        "RMSE": 0.33961409882937366,
+        "MAE": 0.27116378814636355,
+        "NSE": 0.876107367655846,
+        "KGE": 0.8530460382518323,
+        "RMSE_day1": 0.3396845636383012,
+        "RMSE_day3": 0.33951671640443637
+      },
+      "water_temp": {
+        "RMSE": 1.3674752282165434,
+        "MAE": 1.0894000796143881,
+        "NSE": 0.8753653577062654,
+        "KGE": 0.8345215745000881,
+        "RMSE_day1": 1.3683286979473728,
+        "RMSE_day3": 1.3667948608271072
+      }
+    }
+  },
+  "notes": "Exp 2a_river_uniform, seed 1",
+  "ai_assistant": "Perplexity Computer \u00b7 Claude Opus 5.5",
+  "run_id": "20261021-085313",
+  "created": "2026-10-21T08:53:13.359008+00:00",
+  "user": "user",
+  "python": "3.14.3",
+  "git": {
+    "commit": "0a88a5031a96211259e95d542a668f078410756e",
+    "dirty": false
+  }
+}

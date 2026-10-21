@@ -10,7 +10,7 @@ tested connector exists in `src/funkyforelle/connectors/`.
 | P1 | [MeteoSwiss SwissMetNet OGD](https://data.geo.admin.ch/browser/#/collections/ch.meteoschweiz.ogd-smn) | MeteoSwiss | air temp (mean, max), precipitation, global radiation, sunshine | daily / hourly, historical + real-time | open, attribution | **Integrated** (`meteoswiss`), live-tested |
 | P1 | AWEL hydrometry & water monitoring | Canton Zürich (AWEL) | water temp, discharge, DO, pH, conductivity | real-time (some stations) | agreement needed | Access to request |
 | P1 | FunkyForelle field sensors | FunkyForelle / Fischereiverein See + Gaster | DO, water temp | real-time | own data | Planned (5 sites) |
-| P1 | MeteoSwiss local forecasts / ICON-CH | MeteoSwiss | forecast air temp, precipitation, radiation | forecasts | open | Candidate (needed for operational forecasts) |
+| P1 (top) | MeteoSwiss local forecasts / ICON-CH | MeteoSwiss | forecast air temp, precipitation, radiation | forecasts | open | Candidate. Experiment 2: a perfect forecast cuts day-3 DO error by 28% |
 | P2 | FOEN river temperature network | BAFU / FOEN | water temp | real-time | open | Candidate |
 | P2 | NAWA TREND / NAWA FRACHT | BAFU + cantons | nutrients, DO, conductivity, pH | periodic samples | on request | Candidate |
 | P2 | Eawag Urban Water Observatory | Eawag | DO, water temp, conductivity | high-frequency | on request | Candidate |
@@ -29,7 +29,8 @@ tested connector exists in `src/funkyforelle/connectors/`.
 - Unofficial JSON wrapper around the FOEN real-time feed; the same path as
   `AareML/aareml_live_demo.py`.
 - Bot protection blocks many cloud and CI IP ranges, so the live test
-  (`pytest -m live`) needs a normal network. The parser is tested offline.
+  (`pytest -m live`) needs a normal network; see [foen-live-test.md](foen-live-test.md).
+  The parser is tested offline.
 - Serves a recent window, not long histories. Use CAMELS-CH-Chem for training.
 - Attribution: "Source: FOEN".
 
