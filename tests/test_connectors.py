@@ -121,3 +121,14 @@ def test_foen_live_daterange():
     # plausibility: Rhine water temperature and discharge
     assert wide["water_temp"].dropna().between(0, 30).all()
     assert (wide["discharge"].dropna() > 0).all()
+
+
+@pytest.mark.live
+def test_openmeteo_forecast_live():
+    from funkyforelle.connectors import OpenMeteoForecast
+
+    c = OpenMeteoForecast()
+    live = c.latest(["VAD"], days=3)
+    assert live["timestamp"].nunique() == 3
+    past = c.fetch(["VAD"], "2025-08-01", "2025-08-05")
+    assert past["variable"].nunique() == 4 and past["timestamp"].nunique() == 5

@@ -69,3 +69,22 @@ def test_step_weights_length_checked():
     from funkyforelle.models.seq2seq import Seq2SeqForecaster
     with pytest.raises(ValueError):
         Seq2SeqForecaster(horizon=3, step_weights=[1, 1])
+
+
+def test_pipeline_forecast_noise(synthetic_root, tmp_path):
+    pytest.importorskip("torch")
+    idx = pd.date_range("2024-01-01", periods=400).rename("origin")
+    rng = np.random.default_rng(0)
+    pool = pd.DataFrame({f"{v}_d{L}": rng.normal(0, 0.1, 400)
+                         for L in (1, 2, 3) for v in ["doy_sin", "doy_cos"]}, idx)
+    pool.to_csv(tmp_path / "pool.csv")
+    cfg = _cfg(synthetic_root)
+    cfg["future_features"] = ["doy_sin", "doy_cos"]
+    cfg["forecast_noise"] = {"pool": str(tmp_path / "pool.csv"), "train": True, "test": True}
+    rec = run(cfg, runs_dir=str(tmp_path / "runs"), verbose=False)
+    fn = rec.params["forecast_noise"]
+    assert fn["train"] and fn["test"] and fn["pool_sizes"]["train"] > 0
+    assert np.isfinite(rec.metrics["do_mgl"]["RMSE"])
+    cfg.pop("future_features")
+    with pytest.raises(ValueError):
+        run(cfg, runs_dir=str(tmp_path / "runs"), verbose=False)

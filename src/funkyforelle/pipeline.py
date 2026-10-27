@@ -90,7 +90,30 @@ def run(cfg: dict, model_override: str | None = None, ai_assistant: str = "",
             print(f"[pipeline] {k}: {len(X)} windows")
         if len(X) == 0:
             raise ValueError(f"no complete windows in {k} split — check dates / gaps")
-    (Xtr, ytr, _, Ftr), (Xva, yva, _, Fva), (Xte, yte, ote, Fte) = W["train"], W["val"], W["test"]
+    (Xtr, ytr, otr, Ftr), (Xva, yva, ova, Fva), (Xte, yte, ote, Fte) = W["train"], W["val"], W["test"]
+
+    # realistic forecast errors on future covariates (see forecast_noise.py)
+    fn = cfg.get("forecast_noise") or {}
+    augment, noise_info, s_tr, s_te = None, {}, None, None
+    if fn and not fut:
+        raise ValueError("forecast_noise needs future_features")
+    if fn:
+        from .forecast_noise import ForecastErrorSampler
+        kw = dict(variables=fut, horizon=H, season_days=fn.get("season_days", 45))
+        nseed = fn.get("seed", 123)
+        Ftr_clean = Ftr
+        if fn.get("train", False):
+            s_tr = ForecastErrorSampler(fn["pool"], split="train", **kw)
+            Fva = s_tr.apply(Fva, ova, np.random.default_rng(nseed + 1))
+            mseed = cfg.get("model", {}).get("seed", 42)
+
+            def augment(epoch, _s=s_tr, _F=Ftr_clean, _o=otr):
+                return _s.apply(_F, _o, np.random.default_rng([mseed, epoch]))
+        if fn.get("test", False):
+            s_te = ForecastErrorSampler(fn["pool"], split="test", **kw)
+            Fte = s_te.apply(Fte, ote, np.random.default_rng(nseed))
+        sizes = {k: v.n for k, v in (("train", s_tr), ("test", s_te)) if v is not None}
+        noise_info = {"forecast_noise": {**fn, "pool_sizes": sizes}}
 
     tidx = [feats.index(t) for t in targets]
     baselines = {
@@ -108,9 +131,10 @@ def run(cfg: dict, model_override: str | None = None, ai_assistant: str = "",
     elif model_name == "seq2seq_lstm":
         from .models.seq2seq import Seq2SeqForecaster
         m = Seq2SeqForecaster(horizon=H, verbose=verbose, **mparams).fit(
-            Xtr, ytr, Xva, yva, Ftr, Fva)
+            Xtr, ytr, Xva, yva, Ftr, Fva, xf_tr_augment=augment)
         pred = m.predict(Xte, Fte)
-        params = {**m.params, "best_epoch": m.best_epoch, "future_features": fut or []}
+        params = {**m.params, "best_epoch": m.best_epoch, "future_features": fut or [],
+                  **noise_info}
     else:
         raise ValueError(f"unknown model {model_name!r}")
 

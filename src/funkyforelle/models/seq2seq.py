@@ -100,7 +100,9 @@ class Seq2SeqForecaster:
         self.verbose = verbose
         self.history: dict[str, list[float]] = {"train": [], "val": []}
 
-    def fit(self, X_tr, y_tr, X_va, y_va, Xf_tr=None, Xf_va=None):
+    def fit(self, X_tr, y_tr, X_va, y_va, Xf_tr=None, Xf_va=None, xf_tr_augment=None):
+        """``xf_tr_augment(epoch) -> Xf_tr``: optional, a fresh (e.g. noise-augmented)
+        copy of the training future covariates for each epoch."""
         p = self.params
         torch.manual_seed(p["seed"])
         np.random.seed(p["seed"])
@@ -121,6 +123,8 @@ class Seq2SeqForecaster:
         g = torch.Generator().manual_seed(p["seed"])
         for epoch in range(1, p["epochs"] + 1):
             tf = p["teacher_forcing_start"] * max(0.0, 1 - epoch / (p["epochs"] * 0.5))
+            if xf_tr_augment is not None and Ft is not None:
+                Ft = torch.tensor(self.fs.transform(xf_tr_augment(epoch)))
             self.model.train()
             perm = torch.randperm(len(Xt), generator=g)
             tot = 0.0
