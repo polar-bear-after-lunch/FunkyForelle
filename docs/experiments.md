@@ -129,3 +129,92 @@ means the 95% interval of the error difference excludes zero.
   observations.
 - Use gauges with low-DO events (smaller rivers in CAMELS-CH-Chem), and later
   the field sites, so alert skill can be measured.
+
+## Experiment 3 — realistic weather forecasts as inputs, Rhein–Diepoldsau (2473)
+
+**Question.** Experiment 2d showed that a *perfect* 3-day weather forecast
+cuts day-3 DO error by 28%. How much of that gain survives with *real*
+forecast errors, and does training on noisy forecasts help?
+
+**Why simulated forecasts.** ICON-CH2 forecasts have only been archived since
+2025-07, while river DO data end in 2020. So we used **real ICON-CH2
+forecast errors** at MeteoSwiss Vaduz (469 forecast runs, 2025-07 to 2026-10,
+`resources/forecast_errors/icon_ch2_VAD.csv`) and added them to the observed
+2017–2020 weather:
+- Errors are drawn as whole runs (all 3 days and 4 variables together),
+  matched by season (±45 days).
+- Errors from even ISO weeks are used for training and validation, and from
+  odd weeks for testing.
+- Every variant gets **the same test errors** and is tested on the same
+  1,336 windows as experiment 2.
+
+Setup: commit `cbbd9a7` (clean tree), 3 seeds (42, 1, 2), run 2026-10-27 on CPU
+with Perplexity Computer · Claude Opus 5.5. Run IDs: `20261027-063312` … `20261027-064121`.
+
+| Variant | Training | Test inputs |
+|---|---|---|
+| 2c (reference) | no forecast | no forecast |
+| 3a | perfect future weather (as 2d) | realistic ICON-CH2 forecasts |
+| 3b | realistic forecast errors, fresh draw every epoch | realistic ICON-CH2 forecasts |
+| 3c | as 3b, without the rain forecast | realistic ICON-CH2 forecasts |
+| 2d (upper bound) | perfect future weather | perfect future weather |
+
+**DO RMSE (mg/L)**: day 1–3 values use seed-averaged errors
+
+| Model | 3-day mean | Day 1 | Day 2 | Day 3 | KGE |
+|---|---|---|---|---|---|
+| Persistence | 0.230 | 0.159 | — | 0.286 | — |
+| 2c, no forecast | 0.184 ± 0.002 | 0.125 | 0.193 | 0.233 | 0.960 |
+| 3a, trained on perfect weather | 0.159 ± 0.002 | 0.124 | 0.170 | 0.181 | 0.985 |
+| **3b, trained on realistic forecasts** | **0.152 ± 0.000** | **0.120** | **0.162** | **0.176** | 0.980 |
+| 3c, as 3b without rain | 0.152 ± 0.002 | 0.120 | 0.162 | 0.175 | 0.982 |
+| 2d, perfect forecast (upper bound) | 0.146 ± 0.002 | 0.118 | 0.154 | 0.167 | 0.986 |
+
+**Water temperature RMSE (°C)**
+
+| Model | 3-day mean | Day 1 | Day 2 | Day 3 |
+|---|---|---|---|---|
+| 2c, no forecast | 0.736 | 0.477 | 0.774 | 0.956 |
+| 3a | 0.502 | 0.410 | 0.535 | 0.560 |
+| 3b | 0.508 | 0.408 | 0.536 | 0.580 |
+| 3c | 0.509 | 0.405 | 0.540 | 0.583 |
+| 2d (upper bound) | 0.443 | 0.374 | 0.460 | 0.494 |
+
+**Paired significance**: moving-block bootstrap with 30-day blocks (`scripts/compare_runs.py`)
+
+| Comparison | DO day 1 | DO day 2 | DO day 3 | Temp day 1 | Temp day 3 |
+|---|---|---|---|---|---|
+| 3b vs 2c (adding realistic forecasts) | −4.2%, significant | −16.4%, significant | −24.7%, significant | −14.4%, significant | −39.4%, significant |
+| 3b vs 3a (training on realistic forecast errors) | −3.4%, significant | −5.2%, significant | −2.9%, significant | −0.6%, not significant | +3.5%, not significant |
+| 3c vs 3b (dropping the rain forecast) | −0.4%, not significant | 0.0%, not significant | −0.5%, not significant | −0.7%, not significant | +0.6%, not significant |
+| 2d vs 3b (remaining gap to a perfect forecast) | −2.0%, not significant | −4.9%, significant | −4.9%, significant | −8.3%, significant | −14.8%, significant |
+
+**Findings**
+- **Most of the forecast gain survives realistic errors.** With ICON-CH2-like
+  forecasts, day-3 DO error drops 25% compared with no forecast (0.233 → 0.176
+  mg/L). That keeps about 86% of the perfect-forecast gain for DO and about
+  80% for temperature on day 3. Day-3 forecasts with weather input are now
+  about as accurate as day-2 forecasts without it.
+- **Training on realistic forecast errors helps DO slightly but consistently**
+  (−3 to −5%, significant on all three days). For temperature it makes no
+  measurable difference. It costs nothing and makes the model more robust, so
+  it becomes the default.
+- **The rain forecast adds nothing measurable here**, which fits its low
+  accuracy at Vaduz. Rain is kept as an option because it may matter in small,
+  fast-reacting catchments; this should be checked per site.
+- Overall improvement over persistence for DO with the best model (3b):
+  day 1 −25% (0.159 → 0.120), day 3 −38% (0.286 → 0.176).
+
+**Limitations**
+- The forecast errors come from one station (Vaduz) over 15 months. They
+  assume ICON-CH2 errors in 2017–2020 would have looked like those in
+  2025–2026.
+- Errors are matched by season but not by weather situation. Real errors are
+  probably larger in convective or foehn situations, which tend to be the
+  warm, critical days.
+- The model sees forecasts for the Vaduz point, not catchment averages.
+- As before, there were no DO values below 6 mg/L, so alert skill can't be
+  measured at this river.
+- The next check uses real archived forecasts (2025-07 onwards) against live
+  FOEN water temperature at 2473. This needs the FOEN live test to pass on a
+  normal network first.

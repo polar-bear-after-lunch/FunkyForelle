@@ -10,7 +10,7 @@ tested connector exists in `src/funkyforelle/connectors/`.
 | P1 | [MeteoSwiss SwissMetNet OGD](https://data.geo.admin.ch/browser/#/collections/ch.meteoschweiz.ogd-smn) | MeteoSwiss | air temp (mean, max), precipitation, global radiation, sunshine | daily / hourly, historical + real-time | open, attribution | **Integrated** (`meteoswiss`), live-tested |
 | P1 | AWEL hydrometry & water monitoring | Canton Zürich (AWEL) | water temp, discharge, DO, pH, conductivity | real-time (some stations) | agreement needed | Access to request |
 | P1 | FunkyForelle field sensors | FunkyForelle / Fischereiverein See + Gaster | DO, water temp | real-time | own data | Planned (5 sites) |
-| **P1 (top)** | **MeteoSwiss ICON-CH2 forecasts via [Open-Meteo](https://open-meteo.com/en/docs/previous-runs-api)** | MeteoSwiss model, archived by Open-Meteo | forecast air temp, precipitation, radiation, 1–5 days | live + archive from 2025-07-06 | free for non-commercial use, CC BY 4.0 | **Selected** as the forecast input (see "Weather forecasts" below) |
+| **P1 (top)** | **MeteoSwiss ICON-CH2 forecasts via [Open-Meteo](https://open-meteo.com/en/docs/previous-runs-api)** | MeteoSwiss model, archived by Open-Meteo | forecast air temp, precipitation, radiation, 1–5 days | live + archive from 2025-07-06 | free for non-commercial use, CC BY 4.0 | **Integrated** (`openmeteo_forecast`, 2026-10-27); used in experiment 3 |
 | P2 | MeteoSwiss OGD ICON-CH1/CH2-EPS (GRIB) | MeteoSwiss | full model fields, 11/21 ensemble members | live, kept only 24 h | open, attribution | Self-archive daily from now on, as the long-term official source |
 | P2 | MeteoSwiss local forecasts (point, post-processed) | MeteoSwiss | temp incl. 10/90% quantiles, precipitation, radiation, 9 days | hourly updates; past forecasts not documented | open, attribution | Self-archive and compare with ICON-CH2 after one season |
 | P3 | ECMWF reforecasts (MARS archive) | ECMWF | 20-year ensemble hindcasts | archive | CC BY 4.0; research fee waiver needed for access | Backup if long forecast training data are needed |
@@ -78,12 +78,16 @@ results in [forecast-skill-vaduz.csv](forecast-skill-vaduz.csv)):
 - The Open-Meteo archive starts mid-2025. That doesn't overlap with
   CAMELS-CH-Chem (ends 2020), so we can't train directly on archived forecasts.
 
+**Status (2026-10-27):** steps 1 and 2 are done. Experiment 3 shows that
+realistic forecasts keep about 86% of the perfect-forecast gain in day-3 DO
+error ([experiments.md](experiments.md)). Steps 3 and 4 are open.
+
 **Plan**
-1. **Connector `openmeteo_forecast`.** Point forecasts per site and lead day,
+1. **Connector `openmeteo_forecast`** (done). Point forecasts per site and lead day,
    ICON-CH2 by default, aggregated to the daily schema (`air_temp`,
    `air_temp_max`, `precip`, `global_radiation`). Covers live forecasts plus
    the archive.
-2. **Training: observed weather plus realistic forecast noise.** Train on
+2. **Training: observed weather plus realistic forecast noise** (done: real error pool, `src/funkyforelle/forecast_noise.py`). Train on
    observed weather for 1995–2020 (as in 2d), but add noise with the measured
    ICON-CH2 error by lead day and variable (e.g. temperature: σ ≈ 1.2 / 1.35 /
    1.5 °C, bias about +0.3 °C). The model then learns not to over-trust the
