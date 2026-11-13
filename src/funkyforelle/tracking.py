@@ -18,6 +18,7 @@ import datetime as dt
 import getpass
 import hashlib
 import json
+import os
 import platform
 import subprocess
 from dataclasses import asdict, dataclass, field
@@ -44,6 +45,32 @@ def data_hash(df: pd.DataFrame) -> str:
     return h.hexdigest()[:12]
 
 
+def compute_info() -> dict:
+    """Where the run happened: host, Slurm job (if any), CPU threads, torch/GPU."""
+    info = {"host": platform.node(), "machine": platform.machine()}
+    for k in ("SLURM_JOB_ID", "SLURM_ARRAY_TASK_ID", "SLURM_JOB_PARTITION", "SLURM_CPUS_PER_TASK",
+              "SLURM_CLUSTER_NAME"):
+        if os.environ.get(k):
+            info[k.lower()] = os.environ[k]
+    try:
+        import torch
+
+        info["torch"] = torch.__version__
+        info["torch_threads"] = torch.get_num_threads()
+        info["cuda"] = torch.cuda.is_available()
+        if info["cuda"]:
+            info["gpu"] = torch.cuda.get_device_name(0)
+    except ImportError:
+        pass
+    return info
+
+
+def _new_run_id() -> str:
+    rid = dt.datetime.now().strftime("%Y%m%d-%H%M%S")
+    task = os.environ.get("SLURM_ARRAY_TASK_ID")
+    return f"{rid}-a{task}" if task else rid  # parallel array tasks must not collide
+
+
 @dataclass
 class RunRecord:
     model: str
@@ -57,11 +84,12 @@ class RunRecord:
     baselines: dict = field(default_factory=dict)
     notes: str = ""
     ai_assistant: str = ""
-    run_id: str = field(default_factory=lambda: dt.datetime.now().strftime("%Y%m%d-%H%M%S"))
+    run_id: str = field(default_factory=_new_run_id)
     created: str = field(default_factory=lambda: dt.datetime.now().astimezone().isoformat())
     user: str = field(default_factory=getpass.getuser)
     python: str = field(default_factory=platform.python_version)
     git: dict = field(default_factory=git_info)
+    compute: dict = field(default_factory=compute_info)
 
     def save(self, runs_dir: str | Path = "runs") -> Path:
         d = Path(runs_dir) / self.run_id
